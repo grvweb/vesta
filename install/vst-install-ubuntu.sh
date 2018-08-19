@@ -1295,9 +1295,8 @@ echo -e "#               Configure PHP 7.2 Template                 #"
 echo -e "#----------------------------------------------------------#"
 
 # Installing PHP repo
-apt install apt-transport-https ca-certificates
-wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
-sh -c 'echo "deb https://packages.sury.org/php/ stretch main" > /etc/apt/sources.list.d/php.list'
+apt install -y software-properties-common python-software-properties
+sudo add-apt-repository -y ppa:ondrej/php
 
 apt-get install php7.2-apcu php7.2-mbstring php7.2-bcmath php7.2-cli php7.2-curl php7.2-fpm php7.2-gd php7.2-intl php7.2-mysql php7.2-soap php7.2-xml php7.2-zip php7.2-memcache php7.2-memcached php7.2-zip
 update-rc.d php7.2-fpm defaults
@@ -1337,7 +1336,7 @@ sed -i "s#%web_ssl_port%#%proxy_ssl_port%#g" /usr/local/vesta/data/templates/web
 sed -i "s#%backend_lsnr%#unix:/run/php/php7.2-fpm-%domain%.sock#g" /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-wordpress-72.tpl
 sed -i "s#%backend_lsnr%#unix:/run/php/php7.2-fpm-%domain%.sock#g" /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-wordpress-72.stpl
 
-rm /etc/apt/sources.list.d/php.list
+rm  /etc/apt/sources.list.d/ondrej-ubuntu-php-$codename.list
 
 #----------------------------------------------------------#
 #                   Vesta Access Info                      #
