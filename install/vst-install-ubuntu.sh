@@ -1336,7 +1336,7 @@ sed -i "s#%web_ssl_port%#%proxy_ssl_port%#g" /usr/local/vesta/data/templates/web
 sed -i "s#%backend_lsnr%#unix:/run/php/php7.2-fpm-%domain%.sock#g" /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-wordpress-72.tpl
 sed -i "s#%backend_lsnr%#unix:/run/php/php7.2-fpm-%domain%.sock#g" /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-wordpress-72.stpl
 
-rm  /etc/apt/sources.list.d/ondrej-ubuntu-php-$codename.list
+rm  /etc/apt/sources.list.d/ondrej-$VERSION-php-$codename.list
 
 #----------------------------------------------------------#
 #                   Vesta Access Info                      #
