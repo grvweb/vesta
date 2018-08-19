@@ -447,6 +447,11 @@ fi
 apt-get -y upgrade
 check_result $? 'apt-get upgrade failed'
 
+# Installing PHP repo
+apt install apt-transport-https ca-certificates
+wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+sh -c 'echo "deb https://packages.sury.org/php/ stretch main" > /etc/apt/sources.list.d/php.list'
+
 # Installing nginx repo
 apt=/etc/apt/sources.list.d
 echo "deb http://nginx.org/packages/mainline/ubuntu/ $codename nginx" \
@@ -868,6 +873,7 @@ if [ "$apache" = 'yes'  ]; then
     a2enmod ssl
     a2enmod actions
     a2enmod ruid2
+    a2enmod proxy_fcgi setenvif
     mkdir -p /etc/apache2/conf.d
     echo > /etc/apache2/conf.d/vesta.conf
     echo "# Powered by vesta" > /etc/apache2/sites-available/default
@@ -916,6 +922,47 @@ for pconf in $(find /etc/php* -name php.ini); do
     sed -i 's%_open_tag = Off%_open_tag = On%g' $pconf
 done
 
+#----------------------------------------------------------#
+#               Configure PHP 7.2 Template                 #
+#----------------------------------------------------------#
+
+apt-get install php7.2-apcu php7.2-mbstring php7.2-bcmath php7.2-cli php7.2-curl php7.2-fpm php7.2-gd php7.2-intl php7.2-mysql php7.2-soap php7.2-xml php7.2-zip php7.2-memcache php7.2-memcached php7.2-zip
+update-rc.d php7.2-fpm defaults
+a2enconf php7.2-fpm
+service apache2 restart
+cp -r /etc/php/7.2/ /root/vst_install_backups/php7.2/
+rm -f /etc/php/7.2/fpm/pool.d/*
+wget https://raw.githubusercontent.com/grvweb/vesta/master/PHPv-fpm-tpl/PHP-FPM-72.stpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-72.stpl
+wget https://raw.githubusercontent.com/grvweb/vesta/master/PHPv-fpm-tpl/PHP-FPM-72.tpl -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-72.tpl
+wget https://raw.githubusercontent.com/grvweb/vesta/master/PHPv-fpm-tpl/PHP-FPM-72.sh -O /usr/local/vesta/data/templates/web/apache2/PHP-FPM-72.sh
+chmod a+x /usr/local/vesta/data/templates/web/apache2/PHP-FPM-72.sh
+
+wget https://raw.githubusercontent.com/grvweb/vesta/master/install/ubuntu/16.04/templates/web/nginx/php-fpm/default.tpl -O /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-72.tpl
+wget https://raw.githubusercontent.com/grvweb/vesta/master/install/ubuntu/16.04/templates/web/nginx/php-fpm/default.stpl -O /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-72.stpl
+wget https://raw.githubusercontent.com/grvweb/vesta/master/PHPv-fpm-tpl/PHP-FPM-72.sh -O /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-72.sh
+chmod a+x /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-72.sh
+sed -i "s#%web_port%#%proxy_port%#g" /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-72.tpl
+sed -i "s#%web_ssl_port%#%proxy_ssl_port%#g" /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-72.stpl
+sed -i "s#%backend_lsnr%#unix:/run/php/php7.2-fpm-%domain%.sock#g" /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-72.tpl
+sed -i "s#%backend_lsnr%#unix:/run/php/php7.2-fpm-%domain%.sock#g" /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-72.stpl
+
+wget https://raw.githubusercontent.com/grvweb/vesta/master/install/ubuntu/16.04/templates/web/nginx/php-fpm/laravel.tpl -O /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-laravel-72.tpl
+wget https://raw.githubusercontent.com/grvweb/vesta/master/install/ubuntu/16.04/templates/web/nginx/php-fpm/laravel.stpl -O /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-laravel-72.stpl
+wget https://raw.githubusercontent.com/grvweb/vesta/master/PHPv-fpm-tpl/PHP-FPM-72.sh -O /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-laravel-72.sh
+chmod a+x /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-laravel-72.sh
+sed -i "s#%web_port%#%proxy_port%#g" /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-laravel-72.tpl
+sed -i "s#%web_ssl_port%#%proxy_ssl_port%#g" /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-laravel-72.stpl
+sed -i "s#%backend_lsnr%#unix:/run/php/php7.2-fpm-%domain%.sock#g" /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-laravel-72.tpl
+sed -i "s#%backend_lsnr%#unix:/run/php/php7.2-fpm-%domain%.sock#g" /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-laravel-72.stpl
+
+wget https://raw.githubusercontent.com/grvweb/vesta/master/install/ubuntu/16.04/templates/web/nginx/php-fpm/wordpress.tpl -O /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-wordpress-72.tpl
+wget https://raw.githubusercontent.com/grvweb/vesta/master/install/ubuntu/16.04/templates/web/nginx/php-fpm/wordpress.stpl -O /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-wordpress-72.stpl
+wget https://raw.githubusercontent.com/grvweb/vesta/master/PHPv-fpm-tpl/PHP-FPM-72.sh -O /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-wordpress-72.sh
+chmod a+x /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-wordpress-72.sh
+sed -i "s#%web_port%#%proxy_port%#g" /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-wordpress-72.tpl
+sed -i "s#%web_ssl_port%#%proxy_ssl_port%#g" /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-wordpress-72.stpl
+sed -i "s#%backend_lsnr%#unix:/run/php/php7.2-fpm-%domain%.sock#g" /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-wordpress-72.tpl
+sed -i "s#%backend_lsnr%#unix:/run/php/php7.2-fpm-%domain%.sock#g" /usr/local/vesta/data/templates/web/nginx/PHP-FPM-NOa2-wordpress-72.stpl
 
 #----------------------------------------------------------#
 #                    Configure Vsftpd                      #
