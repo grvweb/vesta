@@ -1290,9 +1290,9 @@ $VESTA/upd/add_notifications.sh
 # Adding cronjob for autoupdates
 $VESTA/bin/v-add-cron-vesta-autoupdate
 
-echo -e "#----------------------------------------------------------#\"
-echo -e "#               Configure PHP 7.2 Template                 #\"
-echo -e "#----------------------------------------------------------#\"
+echo -e "#----------------------------------------------------------#"
+echo -e "#               Configure PHP 7.2 Template                 #"
+echo -e "#----------------------------------------------------------#"
 
 # Installing PHP repo
 apt install apt-transport-https ca-certificates
