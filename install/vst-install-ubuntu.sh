@@ -295,7 +295,7 @@ echo ' _|      _|  _|_|_|      _|_|        _|      _|_|_|_|'
 echo '   _|  _|    _|              _|      _|      _|    _|'
 echo '     _|      _|_|_|_|  _|_|_|        _|      _|    _|'
 echo
-echo '                                  Vesta Control Panel'
+echo '                                Vesta Control Panel +'
 echo -e "\n\n"
 
 echo 'The following software will be installed on your system:'
